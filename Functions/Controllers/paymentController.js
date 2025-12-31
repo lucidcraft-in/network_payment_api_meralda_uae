@@ -1,4 +1,6 @@
 const axios = require('axios');
+const admin = require('firebase-admin');
+const { db } = require('../config/firebase');
 
 async function processPayment(req, res) {
   try {
@@ -31,11 +33,37 @@ async function processPayment(req, res) {
     );
 
 
+      // 3. Save to Firebase
+  const paymentData = {
+  orderRef: paymentResponse.data?.orderRef || null,
+
+  action: req.body?.order?.action,
+  amount: req.body?.order?.amount?.value,
+  currency: req.body?.order?.amount?.currencyCode,
+
+  cardholderName: req.body?.payment?.cardholderName,
+
+  status: paymentResponse.data?.status || "CREATED",
+  response: paymentResponse.data,
+
+  createdAt: new Date(),
+};
+
+
+    await db.collection("payments").add(paymentData);
+
+
+
     res.status(201).json({
       message: 'Payment URL generated successfully',
       paymentResponse: paymentResponse.data,
 
     });
+
+
+
+
+
   } catch (err) {
     console.error('Error in processPayment:', err.response?.data || err.message);
     res.status(err.response?.status || 500).json({
