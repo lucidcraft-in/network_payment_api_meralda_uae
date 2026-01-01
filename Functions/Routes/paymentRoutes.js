@@ -1,10 +1,9 @@
-const express = require("express");
-const router = express.Router();
-const paymentController = require("../Controllers/paymentController");
+const express = require('express');
+const router = express.Router(); // eslint-disable-line new-cap
+const {processPayment} = require('../Controllers/paymentController');
 
+router.post('/process-payment', processPayment);
 
-router.post("/process-payment", paymentController.processPayment);
-
-router.get("/", (req, res) => res.send("Hello from Express on Functions"));
+router.get('/', (req, res) => res.send('Hello from Express on Functions'));
 
 module.exports = router;
